@@ -1,0 +1,4 @@
+{% load static %}<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{% block title %}Traproom — музыкальные проекты{% endblock %}</title><link rel="stylesheet" href="{% static 'style.css' %}"><link rel="icon" href="{% static 'favicon.svg' %}"></head>
+<body><header class="topbar"><a class="brand" href="{% url 'projects' %}"><span class="mark">≋</span> TRAPROOM</a><span class="brand-note">От идеи до релиза</span>{% if user.is_authenticated %}<div class="account"><span>{{ user.username }}</span><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="text-button">Выйти</button></form></div>{% endif %}</header>
+<main>{% for message in messages %}<div class="notice" role="status">{{ message }}</div>{% endfor %}{% block content %}{% endblock %}</main><footer>TRAPROOM <span>Твоя музыка. Твой рабочий ритм.</span></footer></body></html>

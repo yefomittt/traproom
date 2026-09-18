@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block content %}<div class="narrow"><a class="back" href="{% url 'project' project.pk %}">← К проекту</a><h1>Изменить задачу</h1><form class="panel" method="post">{% csrf_token %}{{ form.as_p }}<button class="button">Сохранить</button></form></div>{% endblock %}
