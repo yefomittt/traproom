@@ -1,3 +1,5 @@
+import secrets
+
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -6,8 +8,9 @@ from .models import Project, Task
 
 class StudioTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user('alice', password='Test-password-842!')
-        self.other = get_user_model().objects.create_user('bob', password='Other-password-842!')
+        self.password = secrets.token_urlsafe(24)
+        self.user = get_user_model().objects.create_user('alice', password=self.password)
+        self.other = get_user_model().objects.create_user('bob', password=secrets.token_urlsafe(24))
         self.project = Project.objects.create(owner=self.user, title='Мой трек', bpm=120)
         self.task = Task.objects.create(project=self.project, title='Свести бас')
         self.client.force_login(self.user)
@@ -18,7 +21,7 @@ class StudioTests(TestCase):
 
     def test_login_and_logout(self):
         self.client.logout()
-        response = self.client.post('/login/', {'username': 'alice', 'password': 'Test-password-842!'})
+        response = self.client.post('/login/', {'username': 'alice', 'password': self.password})
         self.assertRedirects(response, '/')
         self.assertRedirects(self.client.post('/logout/'), '/login/')
 
