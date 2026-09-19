@@ -34,7 +34,7 @@ class StudioTests(TestCase):
         new.refresh_from_db()
         self.assertEqual((new.title, new.bpm, new.stage), ('Готовый', 95, 'done'))
 
-    def test_invalid_bpm_does_not_create_project(self):
+    def test_rejects_invalid_bpm(self):
         for bpm in (0, 301, 'abc'):
             with self.subTest(bpm=bpm):
                 response = self.client.post(reverse('project_new'), {'title': 'Ошибка', 'bpm': bpm, 'stage': 'idea'})
@@ -68,12 +68,12 @@ class StudioTests(TestCase):
         self.assertTrue(Task.objects.filter(pk=self.task.pk).exists())
         self.assertEqual(self.client.get(reverse('task_toggle', args=[self.task.pk])).status_code, 405)
 
-    def test_deleting_project_deletes_its_tasks(self):
+    def test_project_cascade_delete(self):
         self.client.post(reverse('project_delete', args=[self.project.pk]))
         self.assertFalse(Task.objects.filter(pk=self.task.pk).exists())
         self.assertFalse(Project.objects.filter(pk=self.project.pk).exists())
 
-    def test_other_user_cannot_access_or_mutate_objects(self):
+    def test_owner_isolation(self):
         self.client.force_login(self.other)
         self.assertNotContains(self.client.get('/'), 'Мой трек')
         for route, pk in [('project', self.project.pk), ('project_edit', self.project.pk),
